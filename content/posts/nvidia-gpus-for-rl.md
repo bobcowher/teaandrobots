@@ -5,7 +5,7 @@ tags: ["hardware", "gpu", "nvidia", "ml"]
 draft: false
 ---
 
-I've been working on a quick reference to compare the various NVIDIA GPUs and their professional equivalents for my own system builds. This list will grow as I try things. Enjoy! 
+I've been working on a quick reference to compare the various NVIDIA GPUs and their professional equivalents for my own builds. This list will grow as I try things. Enjoy! 
 
 ## 🔍 Consumer vs. Professional GPUs
 
