@@ -5,6 +5,11 @@ theme = "hello-friend"
 
 [menu]
   [[menu.main]]
+    identifier = "pages"
+    name = "Pages"
+    url = "/pages/"
+    weight = 1
+  [[menu.main]]
     identifier = "posts"
     name = "Posts"
     url = "/posts/"
