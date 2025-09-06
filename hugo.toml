@@ -3,6 +3,15 @@ languageCode = 'en-us'
 title = 'Tea & Robots'
 theme = "hello-friend"
 
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+  [markup.highlight]
+    codeFences = true
+    guessSyntax = false
+    noClasses = false
+
 [menu]
   [[menu.main]]
     identifier = "pages"
