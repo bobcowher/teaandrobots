@@ -33,23 +33,13 @@ sudo mv bin/arduino-cli /usr/local/bin/
 
 Initialize and install your target platform:
 
-```bash
-# Setup configuration
-arduino-cli config init
-
-# Update package index
-arduino-cli core update-index
-
-# Install AVR core for Uno/Nano boards
-arduino-cli core install arduino:avr
-```
+- arduino-cli config init
+- arduino-cli core update-index
+- arduino-cli core install arduino:avr
 
 Fix permissions for USB access:
 
-```bash
-sudo usermod -a -G dialout $USER
-# Log out and back in for group changes to take effect
-```
+- sudo usermod -a -G dialout $USER
 
 ## Project Structure
 
@@ -63,29 +53,20 @@ robot_control/
 **Not:**
 ```
 firmware/
-└── robot_control.ino  # ❌ Folder/file name mismatch
+└── robot_control.ino  # Folder/file name mismatch
 ```
 
 ## Library Management
 
 Install libraries, as needed for your use case. I needed the pid library. 
 
-```bash
-# Search for libraries
-arduino-cli lib search PID
-
-# Install specific library
-arduino-cli lib install "PID"
-
-# List installed libraries
-arduino-cli lib list
-```
+- arduino-cli lib search PID
+- arduino-cli lib install "PID"
+- arduino-cli lib list
 
 For GitHub-hosted libraries:
 
-```bash
-arduino-cli lib install --git-url https://github.com/user/library.git
-```
+- arduino-cli lib install --git-url https://github.com/user/library.git
 
 ## Compilation and Upload
 
@@ -93,23 +74,15 @@ arduino-cli lib install --git-url https://github.com/user/library.git
 
 These are the steps you're going to run over and over again as part of your deployent workflow. I would recommend baking them into a "deploy.sh" script for re-use. 
 
-```bash
-# Compile only
-arduino-cli compile --fqbn arduino:avr:uno /path/to/sketch/
+- arduino-cli compile --fqbn arduino:avr:uno /path/to/sketch/
+- arduino-cli upload -p /dev/ttyUSB0 --fqbn arduino:avr:nano /path/to/sketch/
 
-# Upload to board
-arduino-cli upload -p /dev/ttyUSB0 --fqbn arduino:avr:uno /path/to/sketch/
-
-```
 
 ### Board detection:
 
-If you're not using Arduino UNO, or you're not sure - 
+If you're not using Arduino Nano, or you're not sure - 
 
-```bash
-# Auto-detect connected boards
 arduino-cli board list
-```
 
 ### Common FQBN strings:
 - Arduino Uno: `arduino:avr:uno`
@@ -122,14 +95,10 @@ arduino-cli board list
 The two upload issues I've run into are permissions and bootloaders. 
 
 1. **Wrong bootloader** - A lot of Nano clones use old bootloaders. To get around that, add the bootloader at the end of the fqbn, as shown. 
-   ```bash
-   arduino-cli upload -p /dev/ttyUSB0 --fqbn arduino:avr:nano:cpu=atmega328old sketch/
-   ```
+   - arduino-cli upload -p /dev/ttyUSB0 --fqbn arduino:avr:nano:cpu=atmega328old sketch/
 
 2. **USB permissions** - If you run into permissions issues, don't forget to chmod your Arduino. Make sure that /ttyUSB0 is actually your Arduino before you do though. 
-   
-   ```bash
-   sudo chmod 666 /dev/ttyUSB0
+   - sudo chmod 666 /dev/ttyUSB0
    ```
 
 
