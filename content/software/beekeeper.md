@@ -20,29 +20,55 @@ It's a single Python app with no database. Project configs are JSON files. The w
 
 - Python 3.10+
 - Git
-- A Linux server with one or more GPUs (optional but recommended)
+- A Linux server with systemd
+- One or more GPUs (optional but recommended)
 
 ### Installation
 
+Clone the repo and run the setup script. It creates a virtual environment, installs dependencies, and sets up a systemd service.
+
 ```bash
-git clone https://github.com/robertcowher/beekeeper.git
+git clone https://github.com/bobcowher/beekeeper.git
 cd beekeeper
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+bash setup.sh
 ```
 
-### Running
+The setup script will:
+
+1. Detect your Python version (3.12, 3.11, 3.10, or python3)
+2. Create a venv and install dependencies
+3. Generate and install a systemd service file (requires sudo)
+4. Enable and start the service
+
+Once complete, Beekeeper is running on port 5000. Open `http://your-server:5000` in a browser.
+
+### Managing the Service
 
 ```bash
-# Development
-python app.py
+# Check status
+sudo systemctl status beekeeper
 
-# Production (single worker required for in-memory state)
-gunicorn -w 1 -b 0.0.0.0:5000 "app:create_app()"
+# View logs
+journalctl -u beekeeper -f
+
+# Restart
+sudo systemctl restart beekeeper
+
+# Stop
+sudo systemctl stop beekeeper
 ```
 
-Beekeeper runs on port 5000 by default. Open `http://your-server:5000` in a browser.
+### Development Mode
+
+If you prefer to run Beekeeper without systemd for development or testing:
+
+```bash
+cd beekeeper
+source venv/bin/activate
+python app.py
+```
+
+This runs Flask's development server on port 5000 with auto-reload.
 
 ## Creating a Project
 
@@ -63,7 +89,7 @@ Beekeeper clones the repo, creates an isolated environment, and installs depende
 
 ## Running Training
 
-Once setup completes, hit **Start Training** on the project page. Beekeeper runs your training script as a detached subprocess — closing the browser tab has no effect on the running process.
+Once setup completes, hit **Start Training** on the project page. Beekeeper pulls the latest code from your branch, then launches the training script as a detached subprocess — closing the browser tab has no effect on the running process.
 
 The project page shows:
 
@@ -130,24 +156,21 @@ The dashboard shows live GPU, CPU, and memory stats, updated every 2 seconds. GP
 
 Beekeeper organizes everything under its install directory:
 
-```
-beekeeper/
-├── projects/
-│   └── my-project/
-│       ├── project.json    # Config and state
-│       ├── src/            # Cloned git repo
-│       ├── venv/           # Python environment
-│       └── train.log       # Training output
-├── app.py                  # Flask app
-├── routes/                 # HTTP endpoints
-├── services/               # Business logic
-├── models/                 # Data models
-├── templates/              # Jinja2 templates
-└── static/                 # CSS & JS
-```
+- `projects/` — one subdirectory per project
+  - `project.json` — config and state
+  - `src/` — cloned git repo
+  - `venv/` — Python environment
+  - `train.log` — training output
+- `app.py` — Flask app
+- `routes/` — HTTP endpoints
+- `services/` — business logic
+- `models/` — data models
+- `templates/` — Jinja2 templates
+- `static/` — CSS and JS
+- `setup.sh` — installation script
 
 ## Notes
 
-- Beekeeper must run with a single Gunicorn worker (`-w 1`) because training state is tracked in memory. Multiple workers would each have their own state.
-- Training processes are fully detached — they survive browser disconnects, but not server reboots. After a reboot, the project status in `project.json` will still say "running" but the process will be gone. Restart training from the UI.
+- Beekeeper runs with a single Gunicorn worker (`-w 1`) because training state is tracked in memory. The setup script configures this automatically.
+- Training processes are fully detached — they survive browser disconnects, but not server reboots. After a reboot, the systemd service restarts Beekeeper, but any previously running training jobs will need to be restarted from the UI.
 - There's no authentication yet. Don't expose Beekeeper to the public internet without putting it behind a reverse proxy with auth.
