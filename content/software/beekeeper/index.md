@@ -4,15 +4,23 @@ date: 2026-02-15
 draft: false
 ---
 
-Beekeeper is a lightweight web app for managing long-running AI training runs on a remote server. Point it at a Git repo, and it handles cloning, environment setup, process management, live log streaming, Tensorboard, and file downloads — all from a browser.
+Beekeeper is a lightweight web app designed to allow you to do AI training on a remote server as part of your home lab. At its core, it's designed to handle -
 
-https://github.com/bobcowher/beekeeper
+1. Cloning a repository. 
+2. Setting up the python environment(based on your requirements.txt)
+3. Remote log streaming
+4. Tensorboard Display
+5. File downloads
 
-## Why Beekeeper
+![Beekeeper](beekeeper.png)
 
-Training runs take hours or days. You SSH into a server, start a script, hope the tmux session survives, and check back later. Beekeeper replaces that workflow with a web UI that lets you start, stop, and monitor training from anywhere — including your phone.
+Critical missing features...mostly security stuff.
 
-It's a single Python app with no database. Project configs are JSON files. The whole thing runs in one process.
+1. Authentication - Beekeeper has no authentication, and it **does** allow access to files you've cloned or generated in your training run. For now, I would strongly recommend running Beekeeper only in a home lab scenario, where the server is sitting safely on your local network, and avoiding any sensitive data. 
+2. GitHub auth - Beekeeper has no method of authenticating with your remote repo. It only works on repos you've made public. 
+3. Https - For https, you'll need to put Beekeeper behind a proxy and, again, it's not ready to do anything secure anyway. 
+4. Multi-server support - Eventually, I'd like to have a central Hive server managing multiple workers, and farming jobs out. Today is not that day. This is a single server product. 
+
 
 ## Getting Started
 
@@ -20,7 +28,7 @@ It's a single Python app with no database. Project configs are JSON files. The w
 
 - Python 3.10+
 - Git
-- A Linux server with systemd
+- A Linux server with systemd(Currently tested on Ubuntu)
 - One or more GPUs (optional but recommended)
 
 ### Installation
