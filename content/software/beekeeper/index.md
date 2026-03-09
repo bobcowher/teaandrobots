@@ -86,18 +86,30 @@ From the dashboard, click **+ New Project** and fill in:
 |-------|-------------|---------|
 | Project Name | No spaces, used as the directory name | — |
 | Git URL | Public Git repository URL | — |
-| Branch | Git branch to clone | `main` |
+| Branch | Git branch to clone and pull before each run | `main` |
 | Python Version | Detected from system and conda | auto |
-| Training Script | Python file to run | `train.py` |
-| Tensorboard Log Dir | Where your script writes TB logs | `runs` |
-| Requirements File | Pip requirements to install | `requirements.txt` |
 | Environment Type | venv or conda | `venv` |
+| Training Script | Python file to execute when training starts | `train.py` |
+| Tensorboard Log Dir | Where your script writes TB event files | `runs` |
+| Requirements File | Pip requirements file installed at setup and before each run | `requirements.txt` |
+| Setup Script | Optional shell script run at setup and before each training run | — |
+| Data Dir (local) | Local path in the repo to symlink to your data volume | `data` |
+| Data Dir (system) | Absolute path on the server to a persistent data volume | — |
 
-Beekeeper clones the repo, creates an isolated environment, and installs dependencies in the background. The project page shows setup progress in real time.
+Every field has a tooltip — hover the **?** icon for a description.
+
+Beekeeper clones the repo, creates an isolated environment, runs your setup script (if configured), then installs dependencies in the background. The project page shows setup progress in real time.
 
 ## Running Training
 
-Once setup completes, hit **Start Training** on the project page. Beekeeper pulls the latest code from your branch, then launches the training script as a detached subprocess — closing the browser tab has no effect on the running process.
+Once setup completes, hit **Start Training** on the project page. Beekeeper runs the following sequence before launching your script:
+
+1. `git pull` from your configured branch
+2. Run the setup script (if configured and present)
+3. `pip install -r requirements.txt` (so newly added packages are always present)
+4. Launch the training script as a detached subprocess
+
+Closing the browser tab has no effect on the running process.
 
 The project page shows:
 
@@ -112,6 +124,44 @@ Hit **Stop Training** to send SIGTERM (with a SIGKILL fallback after 5 seconds).
 
 Training scripts often need environment variables — API keys, config flags, hyperparameters. Click **Edit** on the project info card to add key-value pairs. These are passed to the training process at startup.
 
+## Setup Script
+
+If your project needs system-level setup beyond pip — downloading a dataset, linking shared weights, generating config files — you can point Beekeeper at a shell script.
+
+```bash
+# example setup.sh (place this in your repo root)
+#!/bin/bash
+set -e
+
+mkdir -p data
+
+if [ ! -f data/iris.csv ]; then
+    echo "Downloading dataset..."
+    curl -fsSL https://raw.githubusercontent.com/mwaskom/seaborn-data/master/iris.csv \
+         -o data/iris.csv
+fi
+```
+
+Set **Setup Script** to `setup.sh` (or whatever your script is named) when creating or editing a project. Beekeeper will run it from the repository root:
+
+- Once during initial project setup (after the environment is created, before pip install)
+- Again before every training run (after git pull, before pip install)
+
+The script is silently skipped if the file doesn't exist, so you can set it once and it won't cause errors on environments that don't have it yet.
+
+## Data Directory
+
+For projects that need access to a large persistent dataset stored elsewhere on the server — a mounted NAS share, a shared `/data` volume, or any local path — use the Data Directory fields.
+
+| Field | Purpose |
+|-------|---------|
+| Data Dir (local) | Path within the repo to create as a symlink (default: `data`) |
+| Data Dir (system) | Absolute path on the server to link to |
+
+Beekeeper creates a symlink at `src/<local>` → `<system path>` during project setup, and ensures it exists again before each training run. Your training script just reads from `data/` as if the dataset lived inside the repo.
+
+Leave the system path blank if you don't need this feature.
+
 ## Editing Project Settings
 
 Click **Edit** on the project page to change:
@@ -120,6 +170,8 @@ Click **Edit** on the project page to change:
 - Training script path
 - Tensorboard log directory
 - Requirements file
+- Setup script
+- Data directory (local and system paths)
 - Environment variables
 
 Name, Git URL, Python version, and environment type are fixed after creation.
