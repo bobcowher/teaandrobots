@@ -98,16 +98,27 @@ From the dashboard, click **+ New Project** and fill in:
 
 Every field has a tooltip — hover the **?** icon for a description.
 
-Beekeeper clones the repo, creates an isolated environment, runs your setup script (if configured), then installs dependencies in the background. The project page shows setup progress in real time.
+Once you submit, Beekeeper runs the following in the background:
+
+1. **Git clone** — clones the repository at the specified branch into a `workspace/` directory
+2. **Create environment** — creates a venv or conda env with the selected Python version
+3. **Data dir symlink** — if enabled, creates a symlink from `workspace/<local path>` to the system data directory
+4. **Setup script** — if configured and the file exists, runs it from the workspace root
+5. **Pip install** — installs packages from the requirements file
+
+The project page refreshes automatically and shows the current step. If any step fails, the error is displayed and a **Retry Setup** button appears. Retry is smart — it skips the clone and environment creation if they already completed successfully, and picks up from the failed step.
 
 ## Running Training
 
 Once setup completes, hit **Start Training** on the project page. Beekeeper runs the following sequence before launching your script:
 
-1. `git pull` from your configured branch
-2. Run the setup script (if configured and present)
-3. `pip install -r requirements.txt` (so newly added packages are always present)
-4. Launch the training script as a detached subprocess
+1. **Git pull** — pulls the latest code from your configured branch
+2. **Data dir symlink** — verifies or creates the symlink if a data directory is configured
+3. **Setup script** — runs your setup script if configured and present
+4. **Pip install** — installs/updates packages from the requirements file
+5. **Launch** — starts the training script as a detached subprocess
+
+If any step fails, training is aborted and the error is shown on the project page.
 
 Closing the browser tab has no effect on the running process.
 
@@ -115,7 +126,7 @@ The project page shows:
 
 - **Status** — running, stopped, crashed, or idle
 - **PID and elapsed time** while running
-- **Live logs** — expand the Logs section to stream stdout/stderr in real time
+- **Live logs** — expand the Logs section to stream stdout/stderr in real time. Each run starts with a header showing the timestamp, hostname, git commit SHA, branch, Python version, training script, and GPU info, and ends with a footer showing elapsed time and exit status.
 - **Tensorboard** — auto-starts alongside training with a dynamic port, embedded as an iframe with an option to open in a new tab
 
 Hit **Stop Training** to send SIGTERM (with a SIGKILL fallback after 5 seconds).
@@ -218,7 +229,7 @@ Beekeeper organizes everything under its install directory:
 
 - `projects/` — one subdirectory per project
   - `project.json` — config and state
-  - `src/` — cloned git repo
+  - `workspace/` — cloned git repo
   - `venv/` — Python environment
   - `train.log` — training output
 - `app.py` — Flask app
