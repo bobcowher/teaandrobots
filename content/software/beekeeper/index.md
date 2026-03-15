@@ -187,9 +187,20 @@ Click **Edit** on the project page to change:
 
 Name, Git URL, Python version, and environment type are fixed after creation.
 
-## Downloading Files
+## Viewing and Downloading Files
 
-Expand the **Files** section on the project page to browse the project's source directory. You can download individual files or entire directories as zip archives.
+Expand the **Files** section on the project page to browse the project's workspace directory. You can preview files inline, download individual files, or download entire directories as zip archives.
+
+### Inline Viewer
+
+Click any viewable filename or the **view** button to open it in a modal without leaving the page.
+
+| File type | Extensions | Behavior |
+|-----------|------------|----------|
+| Images | png, jpg, jpeg, gif, webp, svg, bmp, ico | Rendered inline. **Auto-refreshes every 2 seconds** — useful for monitoring debug images written during training. |
+| Text / code | py, log, json, yaml, md, sh, csv, toml, js, ts, html, xml, and more | Displayed in a monospace viewer. Files over 1 MB fall back to download. |
+
+Close the viewer with the **×** button, by clicking the backdrop, or by pressing Escape.
 
 ### Using curl
 
