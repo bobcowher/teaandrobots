@@ -230,6 +230,23 @@ The port is allocated dynamically starting at 6006. You can:
 - Open it directly in a new browser tab
 - Clear accumulated Tensorboard logs with the **Clear Tensorboard Logs** button
 
+## Organizing Projects
+
+As your project list grows, the dashboard gives you two tools to stay organized.
+
+### Sort Order
+
+A toggle in the Projects header switches between:
+
+- **Last Run** (default) — projects you've trained most recently float to the top. Projects that have never been run sink to the bottom.
+- **A–Z** — alphabetical order.
+
+Your preference is saved in the browser and remembered across sessions.
+
+### Pinning
+
+Click the 📌 icon on any project row to pin it. Pinned projects always appear above the sorted list, regardless of sort order. Click again to unpin. Pin state is saved in `project.json` on the server.
+
 ## System Stats
 
 The dashboard shows live GPU, CPU, and memory stats, updated every 2 seconds. GPU monitoring uses nvitop for detailed per-GPU utilization, temperature, VRAM, and power draw.
