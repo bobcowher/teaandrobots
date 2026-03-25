@@ -261,6 +261,20 @@ The `/tensorboard/latest` endpoint analyzes your training metrics and returns in
 curl http://your-server:5000/api/v1/projects/my-project/tensorboard/latest?detail=medium
 ```
 
+**Which run is analyzed?**
+- If training is running, it analyzes the **current active run**
+- If training is idle, it analyzes the **most recent completed run**
+- The response includes `is_active: true/false` to indicate which
+
+**To compare with past runs:**
+```bash
+# List all runs
+curl http://your-server:5000/api/v1/projects/my-project/runs
+
+# Get metrics for a specific past run
+curl http://your-server:5000/api/v1/projects/my-project/runs/3/metrics
+```
+
 The response includes trend analysis, convergence detection, and anomaly detection for each metric:
 
 - **trend**: `improving`, `stable`, `worsening`, or `unstable`
