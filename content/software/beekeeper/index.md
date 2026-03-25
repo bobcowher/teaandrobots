@@ -230,6 +230,80 @@ The port is allocated dynamically starting at 6006. You can:
 - Open it directly in a new browser tab
 - Clear accumulated Tensorboard logs with the **Clear Tensorboard Logs** button
 
+## REST API
+
+Beekeeper exposes a REST API for programmatic control of projects. All endpoints return JSON with a consistent format:
+
+```json
+{"success": true, "data": {...}}
+{"success": false, "error": {"code": "...", "message": "..."}}
+```
+
+### Key Endpoints
+
+| Action | Method | Endpoint |
+|--------|--------|----------|
+| List projects | GET | `/api/v1/projects` |
+| Start training | POST | `/api/v1/projects/<name>/training/start` |
+| Stop training | POST | `/api/v1/projects/<name>/training/stop` |
+| Check status | GET | `/api/v1/projects/<name>/training/status` |
+| Get logs | GET | `/api/v1/projects/<name>/logs?tail=100` |
+| Get metrics | GET | `/api/v1/projects/<name>/tensorboard/latest` |
+| List files | GET | `/api/v1/projects/<name>/files` |
+| Download file | GET | `/api/v1/projects/<name>/files/<path>` |
+| System stats | GET | `/api/v1/stats` |
+
+### TensorBoard Metrics Analysis
+
+The `/tensorboard/latest` endpoint analyzes your training metrics and returns insights:
+
+```bash
+curl http://your-server:5000/api/v1/projects/my-project/tensorboard/latest?detail=medium
+```
+
+The response includes trend analysis, convergence detection, and anomaly detection for each metric:
+
+- **trend**: `improving`, `stable`, `worsening`, or `unstable`
+- **converged**: boolean indicating if the metric has stabilized
+- **anomalies**: array of unusual spikes or drops
+- **summary**: human-readable interpretation
+
+## Agent Integration
+
+> **Beta Feature** — Available in the `develop` branch. Not yet in stable release.
+
+Beekeeper can be controlled by AI agents (like Claude Code). Each project page has an **API** section with two subsections:
+
+- **Human**: curl examples for command-line use
+- **Agent**: downloadable instructions file
+
+### Setting Up an Agent
+
+1. Open your project in Beekeeper
+2. Expand **API** → **Agent**
+3. Click **Download BEEKEEPER_\<project\>.md** (or use the curl command shown)
+4. Add the file to your project's root directory or `~/.claude/`
+
+The downloaded file contains:
+- Quick reference table of all endpoints
+- Pre-flight check guidance (always check status before start/stop)
+- Terminology mapping ("check logs" → which endpoint to use)
+- Detailed metrics interpretation guide
+- Common workflows
+
+Agents can then control training runs, monitor progress, analyze metrics, and download results via HTTP requests
+
+## Run History
+
+Each project tracks its training runs. Expand the **Run History** section on the project page to see:
+
+- Start time and duration
+- Status (completed, crashed, canceled)
+- Git commit at the time of the run
+- Download link for archived logs
+
+Run logs are automatically archived when training completes or is stopped. The history is pruned to keep the last 20 runs.
+
 ## Organizing Projects
 
 As your project list grows, the dashboard gives you two tools to stay organized.
