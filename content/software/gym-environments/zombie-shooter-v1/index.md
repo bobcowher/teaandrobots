@@ -275,6 +275,7 @@ Note: Zombie spawn timing and movement includes stochastic elements even with a 
 
 - **Environment**: https://github.com/bobcowher/zombie-shooter-gym-v1
 - **Examples**: https://github.com/bobcowher/gym-zombie-shooter-examples
+- **Training Validation**: https://github.com/bobcowher/zombie-shooter-gym-v1-test — Custom Double DQN implementation used to validate the environment and reproduce the author's training results
 
 ## License
 
