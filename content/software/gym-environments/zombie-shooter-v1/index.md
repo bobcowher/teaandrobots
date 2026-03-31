@@ -236,19 +236,21 @@ The `info` dict returned by `step()` contains:
 
 ## Examples Repository
 
-Full training scripts and validation code:
+Full training scripts, human play examples, and model testing code:
 
 ```bash
-git clone https://github.com/bobcowher/zombie-shooter-gym-v1-test
-cd zombie-shooter-gym-v1-test
-./setup.sh
-python train.py
+git clone https://github.com/bobcowher/gym-zombie-shooter-examples
+cd gym-zombie-shooter-examples
+pip install -r requirements.txt
+python train_dqn.py
 ```
 
 The examples repo includes:
-- Custom Double DQN training implementation
-- Validation scripts
-- Model testing utilities
+- `01_basic_usage.py` — minimal environment interaction
+- `02_random_agent.py` — baseline random policy
+- `03_train_dqn.py` — full DQN training with checkpoints
+- `04_test_model.py` — load and evaluate trained models
+- `05_human_play.py` — keyboard control
 
 ## Reproducibility
 
@@ -272,7 +274,7 @@ Note: Zombie spawn timing and movement includes stochastic elements even with a 
 ## Source Code
 
 - **Environment**: https://github.com/bobcowher/zombie-shooter-gym-v1
-- **Training Examples**: https://github.com/bobcowher/zombie-shooter-gym-v1-test
+- **Examples**: https://github.com/bobcowher/gym-zombie-shooter-examples
 
 ## License
 
