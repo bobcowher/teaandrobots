@@ -12,6 +12,8 @@ The environment provides grayscale 128×128 observations suitable for CNN-based 
 
 ## Installation
 
+**Version**: 0.1.0 — Now available on PyPI!
+
 ```bash
 pip install gym-zombie-shooter
 ```
@@ -234,21 +236,19 @@ The `info` dict returned by `step()` contains:
 
 ## Examples Repository
 
-Full training scripts, human play examples, and model testing code:
+Full training scripts and validation code:
 
 ```bash
-git clone https://github.com/bobcowher/gym-zombie-shooter-examples
-cd gym-zombie-shooter-examples
-pip install -r requirements.txt
-python train_dqn.py
+git clone https://github.com/bobcowher/zombie-shooter-gym-v1-test
+cd zombie-shooter-gym-v1-test
+./setup.sh
+python train.py
 ```
 
 The examples repo includes:
-- `01_basic_usage.py` — minimal environment interaction
-- `02_random_agent.py` — baseline random policy
-- `03_train_dqn.py` — full DQN training with checkpoints
-- `04_test_model.py` — load and evaluate trained models
-- `05_human_play.py` — keyboard control
+- Custom Double DQN training implementation
+- Validation scripts
+- Model testing utilities
 
 ## Reproducibility
 
@@ -271,8 +271,8 @@ Note: Zombie spawn timing and movement includes stochastic elements even with a 
 
 ## Source Code
 
-- **Environment**: https://github.com/bobcowher/gym-zombie-shooter
-- **Examples**: https://github.com/bobcowher/gym-zombie-shooter-examples
+- **Environment**: https://github.com/bobcowher/zombie-shooter-gym-v1
+- **Training Examples**: https://github.com/bobcowher/zombie-shooter-gym-v1-test
 
 ## License
 
