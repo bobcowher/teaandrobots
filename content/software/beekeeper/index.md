@@ -14,12 +14,13 @@ Beekeeper is a lightweight web app designed to allow you to do AI training on a 
 
 ![Beekeeper](beekeeper.png)
 
-Critical missing features...mostly security stuff.
+**Current limitations:**
 
-1. Authentication - Beekeeper has no authentication, and it **does** allow access to files you've cloned or generated in your training run. For now, I would strongly recommend running Beekeeper only in a home lab scenario, where the server is sitting safely on your local network, and avoiding any sensitive data. 
-2. GitHub auth - Beekeeper has no method of authenticating with your remote repo. It only works on repos you've made public. 
-3. Https - For https, you'll need to put Beekeeper behind a proxy and, again, it's not ready to do anything secure anyway. 
-4. Multi-server support - Eventually, I'd like to have a central Hive server managing multiple workers, and farming jobs out. Today is not that day. This is a single server product. 
+1. **GitHub auth** — Beekeeper has no method of authenticating with your remote repo. It only works on repos you've made public.
+2. **HTTPS** — For HTTPS, you'll need to put Beekeeper behind a reverse proxy. It's not ready to handle anything sensitive without one.
+3. **Multi-server support** — Eventually, I'd like a central Hive server managing multiple workers and farming jobs out. Today is not that day. This is a single-server product.
+
+Authentication (login, sessions, API keys, user management) is implemented and available in the admin panel. It's off by default for home lab use — enable it if your server is exposed beyond your local network.
 
 
 ## Getting Started
@@ -244,14 +245,26 @@ Beekeeper exposes a REST API for programmatic control of projects. All endpoints
 | Action | Method | Endpoint |
 |--------|--------|----------|
 | List projects | GET | `/api/v1/projects` |
+| Create project | POST | `/api/v1/projects` |
+| Project detail | GET | `/api/v1/projects/<name>` |
+| Delete project | DELETE | `/api/v1/projects/<name>` |
+| Clone project | POST | `/api/v1/projects/<name>/clone` |
+| Retry setup | POST | `/api/v1/projects/<name>/setup/retry` |
 | Start training | POST | `/api/v1/projects/<name>/training/start` |
 | Stop training | POST | `/api/v1/projects/<name>/training/stop` |
 | Check status | GET | `/api/v1/projects/<name>/training/status` |
 | Get logs | GET | `/api/v1/projects/<name>/logs?tail=100` |
+| Episode analysis | GET | `/api/v1/projects/<name>/logs/analysis` |
 | Get metrics | GET | `/api/v1/projects/<name>/tensorboard/latest` |
+| Run history | GET | `/api/v1/projects/<name>/runs` |
+| List branches | GET | `/api/v1/projects/<name>/branches` |
+| Switch branch | POST | `/api/v1/projects/<name>/branch` |
 | List files | GET | `/api/v1/projects/<name>/files` |
 | Download file | GET | `/api/v1/projects/<name>/files/<path>` |
+| Busy check | GET | `/api/v1/busy` |
 | System stats | GET | `/api/v1/stats` |
+
+Full interactive reference: `http://your-server:5000/api/v1/docs`
 
 ### TensorBoard Metrics Analysis
 
@@ -277,10 +290,24 @@ curl http://your-server:5000/api/v1/projects/my-project/runs/3/metrics
 
 The response includes trend analysis, convergence detection, and anomaly detection for each metric:
 
-- **trend**: `improving`, `stable`, `worsening`, or `unstable`
-- **converged**: boolean indicating if the metric has stabilized
-- **anomalies**: array of unusual spikes or drops
-- **summary**: human-readable interpretation
+| Field | Description |
+|-------|-------------|
+| `trend` | Overall direction: `improving`, `stable`, `worsening`, or `unstable` |
+| `recent_trend` | Trend of the last 20% of steps — may differ from overall trend |
+| `peak_value` | Best smoothed value reached during the run |
+| `peak_step` | Step at which the smoothed peak occurred |
+| `peak_reversal_pct` | How far the metric has moved away from its peak, as % of total range |
+| `smoothed_final_value` | EMA-smoothed value at the end of the run (more stable than raw final) |
+| `converged` | Boolean — has the metric stabilized? |
+| `anomalies` | Array of unusual spikes or drops |
+| `summary` | Human-readable interpretation |
+
+**Detail levels** (`?detail=low|medium|high`):
+- `low` (default) — summary stats only
+- `medium` — adds `smoothed_points`: ~100 EMA-smoothed data points representing the full training curve, suitable for plotting or trend interpretation
+- `high` — also adds raw sampled points
+
+**Peak detection uses EMA smoothing (alpha=0.9)**, matching TensorBoard's heavy smoothing setting. This prevents single noisy episodes from being reported as the peak — `peak_reversal_pct > 50` on a reward metric is a reliable signal that the model peaked and has meaningfully regressed.
 
 ## Agent Integration
 
