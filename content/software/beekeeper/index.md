@@ -111,9 +111,11 @@ The project page refreshes automatically and shows the current step. If any step
 
 ## Running Training
 
-Once setup completes, hit **Start Training** on the project page. Beekeeper runs the following sequence before launching your script:
+Once setup completes, the **Training** section appears on the project page. A branch picker is visible immediately — select the branch you want to train from and click **Start**.
 
-1. **Git pull** — pulls the latest code from your configured branch
+Beekeeper runs the following sequence before launching your script:
+
+1. **Git pull** — pulls the latest code from the selected branch
 2. **Data dir symlink** — verifies or creates the symlink if a data directory is configured
 3. **Setup script** — runs your setup script if configured and present
 4. **Pip install** — installs/updates packages from the requirements file
@@ -123,14 +125,35 @@ If any step fails, training is aborted and the error is shown on the project pag
 
 Closing the browser tab has no effect on the running process.
 
-The project page shows:
+Each active run appears as a row in the run list showing:
 
-- **Status** — running, stopped, crashed, or idle
-- **PID and elapsed time** while running
-- **Live logs** — expand the Logs section to stream stdout/stderr in real time. Each run starts with a header showing the timestamp, hostname, git commit SHA, branch, Python version, training script, and GPU info, and ends with a footer showing elapsed time and exit status.
-- **Tensorboard** — auto-starts alongside training with a dynamic port, embedded as an iframe with an option to open in a new tab
+- **Status badge** — `starting`, `running`, `stopped`, or `crashed`
+- **Branch name** and **Run ID**
+- **Elapsed time**
+- **Tensorboard link** — if TB started for this run
+- **▶ Logs** — toggle to expand the inline log terminal for that run
+- **■ Stop** — stop this specific run
 
-Hit **Stop Training** to send SIGTERM (with a SIGKILL fallback after 5 seconds).
+Hit **■ Stop** to send SIGTERM (with a SIGKILL fallback after 5 seconds).
+
+## Parallel Runs
+
+By default, Beekeeper allows one run at a time per project. To run multiple branches simultaneously, enable parallel runs in the project edit page:
+
+| Setting | Description |
+|---------|-------------|
+| Parallel Runs | Enable/disable concurrent training runs for this project |
+| Max Parallel Runs | Maximum number of simultaneous runs allowed |
+
+When parallel runs are enabled, a **+ Start Run…** button appears below the active run list. Each parallel run gets its own full clone of the repository in a temporary workspace, its own log file, and its own Tensorboard instance. Completed parallel run workspaces are cleaned up automatically.
+
+Each run is tracked by a **Run ID** — a unique integer assigned at start. The ID appears in the run row, in the log file header, and in the run history table.
+
+## Switching Branches
+
+The **Project Info** card has an **Active Branch** dropdown. Selecting a different branch switches the project's default branch immediately (equivalent to `git checkout` on the server). This affects the next training run's `git pull` target.
+
+Branch switching requires no running training jobs — Beekeeper will warn you if the workspace has uncommitted changes.
 
 ## Environment Variables
 
@@ -170,7 +193,7 @@ For projects that need access to a large persistent dataset stored elsewhere on 
 | Data Dir (local) | Path within the repo to create as a symlink (default: `data`) |
 | Data Dir (system) | Absolute path on the server to link to |
 
-Beekeeper creates a symlink at `src/<local>` → `<system path>` during project setup, and ensures it exists again before each training run. Your training script just reads from `data/` as if the dataset lived inside the repo.
+Beekeeper creates a symlink at `workspace/<local>` → `<system path>` during project setup, and ensures it exists again before each training run. Your training script just reads from `data/` as if the dataset lived inside the repo.
 
 Leave the system path blank if you don't need this feature.
 
@@ -185,6 +208,7 @@ Click **Edit** on the project page to change:
 - Setup script
 - Data directory (local and system paths)
 - Environment variables
+- Parallel runs settings
 
 Name, Git URL, Python version, and environment type are fixed after creation.
 
@@ -231,6 +255,55 @@ The port is allocated dynamically starting at 6006. You can:
 - Open it directly in a new browser tab
 - Clear accumulated Tensorboard logs with the **Clear Tensorboard Logs** button
 
+## Run History
+
+Each project tracks its training runs. Expand the **Run History** section to see a table of past runs.
+
+Each row shows:
+
+- **Run ID** (`#N`) — unique identifier, matches the ID shown in the active run list and log headers
+- **Started** — timestamp
+- **Duration** — wall-clock time
+- **Status** — `completed`, `crashed`, or `canceled`
+- **Branch / Commit** — branch name and short commit SHA at the time of the run
+- **Tags** — custom labels you can add
+- **Actions** — Notes toggle, log download
+
+### Starring Runs
+
+Click the ⭐ button on any run row to star it. Starred runs:
+
+- Are highlighted in the history table
+- Are exempt from automatic pruning (they'll never be deleted by the **Cleanup Old Runs** button)
+- Can be filtered by clicking **★ Starred** in the filter bar
+
+### Tags
+
+Click the **+** button in the Tags cell to add comma-separated tags to a run (e.g., `baseline,lr=0.01`). Tags are searchable using the filter bar above the table.
+
+### Notes
+
+Click **+ Notes** on any row to expand a text area for free-form post-run observations. Notes are saved automatically when you click away.
+
+### Comparing Runs
+
+Check the box on any two rows to enable the **Compare selected** button. The comparison modal shows both runs side by side — branch, status, commit, duration, tags, notes — plus a **git diff** between the two commits so you can see exactly what code changed between runs.
+
+### Filtering
+
+The filter bar above the table has two controls:
+
+- **★ Starred** — toggle to show only starred runs
+- **Filter by tag** — type to filter by tag name (partial match)
+
+### Log Archive
+
+If the run produced a log, a **Log** link appears in the Actions column. Logs are kept independently of the run history — archived logs persist until manually deleted.
+
+### Pruning
+
+The **Cleanup Old Runs** button removes old run records, keeping the most recent N runs (configurable). Starred runs are never pruned regardless of count. **Clear All History** removes all run records for the project.
+
 ## REST API
 
 Beekeeper exposes a REST API for programmatic control of projects. All endpoints return JSON with a consistent format:
@@ -266,6 +339,27 @@ Beekeeper exposes a REST API for programmatic control of projects. All endpoints
 
 Full interactive reference: `http://your-server:5000/api/v1/docs`
 
+The `/training/start` endpoint accepts an optional `branch` parameter to override the project's default branch:
+
+```bash
+curl -X POST http://your-server:5000/api/v1/projects/my-project/training/start \
+     -H 'Content-Type: application/json' \
+     -d '{"branch": "experiment/new-arch"}'
+```
+
+The `/training/status` response includes a `runs` array, one entry per active run:
+
+```json
+{
+  "success": true,
+  "data": {
+    "runs": [
+      {"run_id": 42, "branch": "main", "status": "running", "pid": 12345, "elapsed": 183.4}
+    ]
+  }
+}
+```
+
 ### TensorBoard Metrics Analysis
 
 The `/tensorboard/latest` endpoint analyzes your training metrics and returns insights:
@@ -293,7 +387,8 @@ The response includes trend analysis, convergence detection, and anomaly detecti
 | Field | Description |
 |-------|-------------|
 | `trend` | Overall direction: `improving`, `stable`, `worsening`, or `unstable` |
-| `recent_trend` | Trend of the last 20% of steps — may differ from overall trend |
+| `recent_trend` | Trend of the last 20% of steps — computed on EMA-smoothed values, may differ from overall trend |
+| `late_slope_pct` | Slope of the last 20% of training, normalized as % of total metric range — positive means still improving |
 | `peak_value` | Best smoothed value reached during the run |
 | `peak_step` | Step at which the smoothed peak occurred |
 | `peak_reversal_pct` | How far the metric has moved away from its peak, as % of total range |
@@ -309,41 +404,83 @@ The response includes trend analysis, convergence detection, and anomaly detecti
 
 **Peak detection uses EMA smoothing (alpha=0.9)**, matching TensorBoard's heavy smoothing setting. This prevents single noisy episodes from being reported as the peak — `peak_reversal_pct > 50` on a reward metric is a reliable signal that the model peaked and has meaningfully regressed.
 
-## Agent Integration
+## Agent Integration (MCP Server)
 
-> **Beta Feature** — Available in the `develop` branch. Not yet in stable release.
+Beekeeper ships a Model Context Protocol (MCP) server that lets AI agents — Claude Code, Claude Desktop, or any MCP-compatible client — control training jobs directly without copy-pasting curl commands.
 
-Beekeeper can be controlled by AI agents (like Claude Code). Each project page has an **API** section with two subsections:
+### Install the MCP server
 
-- **Human**: curl examples for command-line use
-- **Agent**: downloadable instructions file
+```bash
+pip install beekeeper-mcp
+```
 
-### Setting Up an Agent
+Or run it directly from the repo without installing:
 
-1. Open your project in Beekeeper
-2. Expand **API** → **Agent**
-3. Click **Download BEEKEEPER_\<project\>.md** (or use the curl command shown)
-4. Add the file to your project's root directory or `~/.claude/`
+```bash
+python /path/to/beekeeper/mcp_server.py
+```
 
-The downloaded file contains:
-- Quick reference table of all endpoints
-- Pre-flight check guidance (always check status before start/stop)
-- Terminology mapping ("check logs" → which endpoint to use)
-- Detailed metrics interpretation guide
-- Common workflows
+### Register with Claude Code
 
-Agents can then control training runs, monitor progress, analyze metrics, and download results via HTTP requests
+Run this once in your terminal:
 
-## Run History
+```bash
+claude mcp add beekeeper -s user -e BEEKEEPER_HOST=http://your-server:5000 -- beekeeper-mcp
+```
 
-Each project tracks its training runs. Expand the **Run History** section on the project page to see:
+If auth is enabled, add `-e BEEKEEPER_API_KEY=your-api-key` before `--`. If `beekeeper-mcp` isn't on your PATH after install, use the full path from `which beekeeper-mcp`.
 
-- Start time and duration
-- Status (completed, crashed, canceled)
-- Git commit at the time of the run
-- Download link for archived logs
+### Register with Claude Desktop
 
-Run logs are automatically archived when training completes or is stopped. The history is pruned to keep the last 20 runs.
+Add to `~/.claude/claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "beekeeper": {
+      "command": "beekeeper-mcp",
+      "env": {
+        "BEEKEEPER_HOST": "http://your-server:5000",
+        "BEEKEEPER_API_KEY": "your-api-key"
+      }
+    }
+  }
+}
+```
+
+### Available MCP Tools
+
+| Tool | Description |
+|------|-------------|
+| `list_projects` | List all projects and their status |
+| `get_project` | Full project detail including current run state |
+| `get_project_instructions` | Per-project agent instructions (goals, metrics, notes) |
+| `training_status` | Current runs for a project |
+| `start_training` | Start a run, optionally specifying a branch |
+| `stop_training` | Stop a specific run by ID |
+| `get_logs` | Tail the log for a run |
+| `analyze_run` | Episode analysis from logs — trend, averages, quartiles |
+| `get_stats` | System GPU/CPU/memory stats |
+| `list_branches` | List remote branches for a project |
+| `switch_branch` | Change the project's active branch |
+| `check_busy` | Check if the server is busy before starting a new job |
+| `create_project` | Create a new project |
+| `delete_project` | Delete a project |
+| `retry_setup` | Retry a failed project setup |
+
+### Starting a Claude session
+
+Each project page has an **API → Agent** section with a ready-to-paste prompt. Paste it into Claude to orient the agent on the project:
+
+```
+You have the Beekeeper MCP server connected. Beekeeper manages ML training jobs on a remote GPU server.
+
+Get oriented on the <project-name> project:
+1. Call get_project_instructions("<project-name>") and read it fully
+2. Call analyze_run("<project-name>") for current training state
+3. Save key context (project name, primary metric, training goals) to your memory
+4. Give me a status report: what's running, how it's performing, anything worth flagging
+```
 
 ## Organizing Projects
 
@@ -387,4 +524,4 @@ Beekeeper organizes everything under its install directory:
 
 - Beekeeper runs with a single Gunicorn worker (`-w 1`) because training state is tracked in memory. The setup script configures this automatically.
 - Training processes are fully detached — they survive browser disconnects, but not server reboots. After a reboot, the systemd service restarts Beekeeper, but any previously running training jobs will need to be restarted from the UI.
-- There's no authentication yet. Don't expose Beekeeper to the public internet without putting it behind a reverse proxy with auth.
+- Authentication is available but off by default. Enable it from the Admin panel if your server is reachable beyond your local network.
