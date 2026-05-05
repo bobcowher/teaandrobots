@@ -96,6 +96,7 @@ From the dashboard, click **+ New Project** and fill in:
 | Setup Script | Optional shell script run at setup and before each training run | — |
 | Data Dir (local) | Local path in the repo to symlink to your data volume | `data` |
 | Data Dir (system) | Absolute path on the server to a persistent data volume | — |
+| Output Paths to Save | Workspace-relative directories your training script writes to that should survive workspace cleanup (e.g. `saved_models`) | — |
 
 Every field has a tooltip — hover the **?** icon for a description.
 
@@ -196,6 +197,23 @@ For projects that need access to a large persistent dataset stored elsewhere on 
 Beekeeper creates a symlink at `workspace/<local>` → `<system path>` during project setup, and ensures it exists again before each training run. Your training script just reads from `data/` as if the dataset lived inside the repo.
 
 Leave the system path blank if you don't need this feature.
+
+## Saved Outputs
+
+When parallel runs are enabled, each run gets a fresh workspace clone — but you probably want your model checkpoints to stick around. The **Output Paths to Save** field lets you list workspace-relative directories (one per line) that get linked into durable storage outside the workspace.
+
+Each run gets its own directory under `projects/<name>/persistent/runs/run_<id>/`. Beekeeper creates symlinks inside the workspace before training starts, so your script writes to the usual path and the files land in persistent storage automatically.
+
+TensorBoard logs are handled separately — no need to list them here.
+
+Two environment variables are injected into every training process:
+
+| Variable | Value |
+|----------|-------|
+| `BEEKEEPER_RUN_DIR` | Absolute path to this run's persistent directory |
+| `BEEKEEPER_TENSORBOARD_DIR` | Absolute path to this run's TB log directory (inside `BEEKEEPER_RUN_DIR`) |
+
+You can read these directly in your training script if you want explicit control over where files land.
 
 ## Editing Project Settings
 
@@ -452,6 +470,7 @@ Add to `~/.claude/claude_desktop_config.json`:
 
 | Tool | Description |
 |------|-------------|
+| `get_version` | Check MCP/server version compatibility — call this at session start |
 | `list_projects` | List all projects and their status |
 | `get_project` | Full project detail including current run state |
 | `get_project_instructions` | Per-project agent instructions (goals, metrics, notes) |
@@ -461,10 +480,11 @@ Add to `~/.claude/claude_desktop_config.json`:
 | `get_logs` | Tail the log for a run |
 | `analyze_run` | Episode analysis from logs — trend, averages, quartiles |
 | `get_stats` | System GPU/CPU/memory stats |
+| `get_capacity` | Training slot capacity: total, running, and available headroom |
 | `list_branches` | List remote branches for a project |
 | `switch_branch` | Change the project's active branch |
-| `check_busy` | Check if the server is busy before starting a new job |
-| `create_project` | Create a new project |
+| `check_busy` | Check if the server is busy (use `get_capacity` for new workflows) |
+| `create_project` | Create a new project, optionally with `output_paths` for persistent artifact storage |
 | `delete_project` | Delete a project |
 | `retry_setup` | Retry a failed project setup |
 
