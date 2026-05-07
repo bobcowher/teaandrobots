@@ -4,6 +4,8 @@ date: 2026-02-15
 draft: false
 ---
 
+> **This project has moved.** Full documentation and releases are now at **[beekeeperml.dev](https://beekeeperml.dev)**.
+
 Beekeeper is a lightweight web app designed to allow you to do AI training on a remote server as part of your home lab. At its core, it's designed to handle -
 
 1. Cloning a repository. 
