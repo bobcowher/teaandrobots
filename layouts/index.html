@@ -1,0 +1,33 @@
+{{ define "body" }}
+    <body class="home-page">
+{{ end }}
+
+{{ define "main" }}
+<main class="home">
+  <div class="home-intro">
+    <h1>Welcome to Tea &amp; Robots</h1>
+    {{ .Content }}
+  </div>
+
+  <div class="home-feature-boxes">
+    <a href="/software/beekeeper/" class="feature-box">
+      <img class="feature-box__image"
+           src="/software/beekeeper/beekeeper.png"
+           alt="Beekeeper dashboard screenshot">
+      <div class="feature-box__body">
+        <span class="feature-box__title">Beekeeper</span>
+        <p class="feature-box__desc">A remote reinforcement learning training tool for your homelab.</p>
+      </div>
+    </a>
+    <a href="/channel-guide/" class="feature-box">
+      <img class="feature-box__image"
+           src="https://img.youtube.com/vi/xx74RpH_Gxc/mqdefault.jpg"
+           alt="Q-Learning to World Models — YouTube series">
+      <div class="feature-box__body">
+        <span class="feature-box__title">YouTube Channel</span>
+        <p class="feature-box__desc">Series and standalone videos on RL, robotics, and AI tools.</p>
+      </div>
+    </a>
+  </div>
+</main>
+{{ end }}
