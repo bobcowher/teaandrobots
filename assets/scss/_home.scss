@@ -1,1 +1,369 @@
-// Home page and channel guide styles — filled in Task 2
+// ── Home page ──────────────────────────────────────────────────────────────
+
+.home-page .content {
+  justify-content: flex-start;
+}
+
+.home-intro {
+  width: 100%;
+  max-width: $max-width;
+  margin: 0 auto;
+  padding: 0 20px;
+  text-align: left;
+}
+
+.home-feature-boxes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  width: 100%;
+  max-width: $max-width;
+  margin: 2rem auto;
+  padding: 0 20px;
+  text-align: left;
+
+  @media #{$media-size-phone} {
+    grid-template-columns: 1fr;
+  }
+}
+
+.feature-box {
+  display: block;
+  text-decoration: none;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: opacity 0.15s;
+  border: 1px solid $light-border-color;
+  color: $light-color;
+
+  @media (prefers-color-scheme: dark) {
+    border-color: $dark-border-color;
+    color: $dark-color;
+  }
+
+  @media (prefers-color-scheme: light) {
+    border-color: $light-border-color;
+    color: $light-color;
+  }
+
+  [data-theme=dark] & {
+    border-color: $dark-border-color;
+    color: $dark-color;
+  }
+
+  [data-theme=light] & {
+    border-color: $light-border-color;
+    color: $light-color;
+  }
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  &__image {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
+  }
+
+  &__body {
+    padding: 14px 16px;
+  }
+
+  &__title {
+    font-size: 1rem;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  &__desc {
+    font-size: 0.85rem;
+    margin: 0;
+    color: $light-color-secondary;
+
+    @media (prefers-color-scheme: dark) {
+      color: $dark-color-secondary;
+    }
+
+    @media (prefers-color-scheme: light) {
+      color: $light-color-secondary;
+    }
+
+    [data-theme=dark] & {
+      color: $dark-color-secondary;
+    }
+
+    [data-theme=light] & {
+      color: $light-color-secondary;
+    }
+  }
+}
+
+// ── Channel guide page ──────────────────────────────────────────────────────
+
+.channel-guide-page .content {
+  justify-content: flex-start;
+}
+
+.guide {
+  width: 100%;
+  max-width: $max-width;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: left;
+}
+
+.topic-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 2rem;
+
+  @media #{$media-size-phone} {
+    grid-template-columns: 1fr;
+  }
+}
+
+.topic-card {
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 1px solid $light-border-color;
+  background-color: $light-background-secondary;
+
+  @media (prefers-color-scheme: dark) {
+    border-color: $dark-border-color;
+    background-color: $dark-background-secondary;
+  }
+
+  @media (prefers-color-scheme: light) {
+    border-color: $light-border-color;
+    background-color: $light-background-secondary;
+  }
+
+  [data-theme=dark] & {
+    border-color: $dark-border-color;
+    background-color: $dark-background-secondary;
+  }
+
+  [data-theme=light] & {
+    border-color: $light-border-color;
+    background-color: $light-background-secondary;
+  }
+
+  &:hover {
+    border-color: #888;
+  }
+
+  &.open {
+    grid-column: 1 / -1;
+    border-color: #888;
+  }
+}
+
+.topic-header {
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+}
+
+.topic-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  display: block;
+}
+
+.topic-meta {
+  font-size: 0.75rem;
+  margin-top: 3px;
+  display: block;
+  color: $light-color-secondary;
+
+  @media (prefers-color-scheme: dark) {
+    color: $dark-color-secondary;
+  }
+
+  @media (prefers-color-scheme: light) {
+    color: $light-color-secondary;
+  }
+
+  [data-theme=dark] & {
+    color: $dark-color-secondary;
+  }
+
+  [data-theme=light] & {
+    color: $light-color-secondary;
+  }
+}
+
+.topic-arrow {
+  font-size: 1.1rem;
+  line-height: 1;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+  margin-left: 12px;
+  color: $light-color-secondary;
+
+  @media (prefers-color-scheme: dark) {
+    color: $dark-color-secondary;
+  }
+
+  @media (prefers-color-scheme: light) {
+    color: $light-color-secondary;
+  }
+
+  [data-theme=dark] & {
+    color: $dark-color-secondary;
+  }
+
+  [data-theme=light] & {
+    color: $light-color-secondary;
+  }
+
+  .topic-card.open & {
+    transform: rotate(90deg);
+  }
+}
+
+.topic-body {
+  display: none;
+  padding: 0 16px 16px;
+
+  .topic-card.open & {
+    display: block;
+  }
+}
+
+.series-entry {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 14px 0;
+  text-decoration: none;
+  border-top: 1px solid $light-border-color;
+  color: $light-color;
+
+  @media (prefers-color-scheme: dark) {
+    border-top-color: $dark-border-color;
+    color: $dark-color;
+  }
+
+  @media (prefers-color-scheme: light) {
+    border-top-color: $light-border-color;
+    color: $light-color;
+  }
+
+  [data-theme=dark] & {
+    border-top-color: $dark-border-color;
+    color: $dark-color;
+  }
+
+  [data-theme=light] & {
+    border-top-color: $light-border-color;
+    color: $light-color;
+  }
+
+  &:hover .series-name {
+    text-decoration: underline;
+  }
+
+  @media #{$media-size-phone} {
+    flex-direction: column;
+  }
+}
+
+.series-thumb {
+  flex-shrink: 0;
+
+  img {
+    width: 160px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 4px;
+    display: block;
+    border: 1px solid $light-border-color;
+
+    @media (prefers-color-scheme: dark) {
+      border-color: $dark-border-color;
+    }
+
+    @media (prefers-color-scheme: light) {
+      border-color: $light-border-color;
+    }
+
+    [data-theme=dark] & {
+      border-color: $dark-border-color;
+    }
+
+    [data-theme=light] & {
+      border-color: $light-border-color;
+    }
+
+    @media #{$media-size-phone} {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16 / 9;
+    }
+  }
+}
+
+.series-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.series-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.series-desc {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  margin: 0 0 6px;
+  color: $light-color-secondary;
+
+  @media (prefers-color-scheme: dark) {
+    color: $dark-color-secondary;
+  }
+
+  @media (prefers-color-scheme: light) {
+    color: $light-color-secondary;
+  }
+
+  [data-theme=dark] & {
+    color: $dark-color-secondary;
+  }
+
+  [data-theme=light] & {
+    color: $light-color-secondary;
+  }
+}
+
+.series-count {
+  font-size: 0.75rem;
+  display: block;
+  color: $light-color-secondary;
+
+  @media (prefers-color-scheme: dark) {
+    color: $dark-color-secondary;
+  }
+
+  @media (prefers-color-scheme: light) {
+    color: $light-color-secondary;
+  }
+
+  [data-theme=dark] & {
+    color: $dark-color-secondary;
+  }
+
+  [data-theme=light] & {
+    color: $light-color-secondary;
+  }
+}
