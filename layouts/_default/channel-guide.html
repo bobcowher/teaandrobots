@@ -1,0 +1,146 @@
+{{ define "body" }}
+    <body class="channel-guide-page">
+{{ end }}
+
+{{ define "main" }}
+<main class="guide">
+  <h1>{{ .Title }}</h1>
+  {{ .Content }}
+
+  <div class="topic-grid">
+
+    {{/* ── Reinforcement Learning ── */}}
+    <div class="topic-card" onclick="this.classList.toggle('open')">
+      <div class="topic-header">
+        <div>
+          <span class="topic-title">Reinforcement Learning</span>
+          <span class="topic-meta">3 series &middot; start here for RL</span>
+        </div>
+        <span class="topic-arrow">&#x203A;</span>
+      </div>
+      <div class="topic-body">
+        <a href="https://youtu.be/xx74RpH_Gxc" target="_blank" rel="noopener" class="series-entry">
+          <div class="series-thumb">
+            <img src="https://img.youtube.com/vi/xx74RpH_Gxc/mqdefault.jpg" alt="Q-Learning to World Models">
+          </div>
+          <div class="series-info">
+            <span class="series-name">Q-Learning to World Models</span>
+            <p class="series-desc">Builds up from a basic Q-learning agent to a world model, step by step.</p>
+            <span class="series-count">4-part series &middot; start with Part 1 &#x2197;</span>
+          </div>
+        </a>
+        <a href="https://youtu.be/TDBGx98br-A" target="_blank" rel="noopener" class="series-entry">
+          <div class="series-thumb">
+            <img src="https://img.youtube.com/vi/TDBGx98br-A/mqdefault.jpg" alt="Building PETS from Scratch">
+          </div>
+          <div class="series-info">
+            <span class="series-name">Building PETS from Scratch</span>
+            <p class="series-desc">Model-based RL with Lunar Lander &mdash; building the full PETS algorithm from the ground up.</p>
+            <span class="series-count">5-part series &middot; start with Part 1 &#x2197;</span>
+          </div>
+        </a>
+        <a href="https://youtu.be/ZNzTYRmgnFs" target="_blank" rel="noopener" class="series-entry">
+          <div class="series-thumb">
+            <img src="https://img.youtube.com/vi/ZNzTYRmgnFs/mqdefault.jpg" alt="Dueling AI — Self-Play RL">
+          </div>
+          <div class="series-info">
+            <span class="series-name">Dueling AI &mdash; Self-Play RL</span>
+            <p class="series-desc">Self-play reinforcement learning plus Pong from scratch. Complete series.</p>
+            <span class="series-count">Complete series &#x2197;</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    {{/* ── Robotics ── */}}
+    <div class="topic-card" onclick="this.classList.toggle('open')">
+      <div class="topic-header">
+        <div>
+          <span class="topic-title">Robotics</span>
+          <span class="topic-meta">1 series &middot; ongoing</span>
+        </div>
+        <span class="topic-arrow">&#x203A;</span>
+      </div>
+      <div class="topic-body">
+        <a href="https://youtu.be/HMACaMz0fxM" target="_blank" rel="noopener" class="series-entry">
+          <div class="series-thumb">
+            <img src="https://img.youtube.com/vi/HMACaMz0fxM/mqdefault.jpg" alt="The Robot Arm Project">
+          </div>
+          <div class="series-info">
+            <span class="series-name">The Robot Arm Project (Marty-v1)</span>
+            <p class="series-desc">Building a physical robot arm from scratch &mdash; hardware, joints, firmware, and everything that broke.</p>
+            <span class="series-count">Ongoing series &middot; start with Kickoff &#x2197;</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    {{/* ── AI Security ── */}}
+    <div class="topic-card" onclick="this.classList.toggle('open')">
+      <div class="topic-header">
+        <div>
+          <span class="topic-title">AI Security</span>
+          <span class="topic-meta">1 series &middot; 3 videos</span>
+        </div>
+        <span class="topic-arrow">&#x203A;</span>
+      </div>
+      <div class="topic-body">
+        <a href="https://youtu.be/t7VuLh8nMhA" target="_blank" rel="noopener" class="series-entry">
+          <div class="series-thumb">
+            <img src="https://img.youtube.com/vi/t7VuLh8nMhA/mqdefault.jpg" alt="Hacking OWASP Juice Shop">
+          </div>
+          <div class="series-info">
+            <span class="series-name">Hacking OWASP Juice Shop</span>
+            <p class="series-desc">Testing three AI assistants against a deliberately vulnerable web app &mdash; ChatGPT, Claude, then Gemini.</p>
+            <span class="series-count">3-part series &middot; start with ChatGPT &#x2197;</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    {{/* ── AI Tools ── */}}
+    <div class="topic-card" onclick="this.classList.toggle('open')">
+      <div class="topic-header">
+        <div>
+          <span class="topic-title">AI Tools</span>
+          <span class="topic-meta">standalone videos</span>
+        </div>
+        <span class="topic-arrow">&#x203A;</span>
+      </div>
+      <div class="topic-body">
+        <a href="https://youtu.be/YBfsiAF-3A8" target="_blank" rel="noopener" class="series-entry">
+          <div class="series-thumb">
+            <img src="https://img.youtube.com/vi/YBfsiAF-3A8/mqdefault.jpg" alt="Claude vs Codex vs Gemini for RL">
+          </div>
+          <div class="series-info">
+            <span class="series-name">Claude vs Codex vs Gemini for RL</span>
+            <p class="series-desc">Head-to-head: which AI coding assistant is most useful for reinforcement learning troubleshooting?</p>
+            <span class="series-count">Standalone &#x2197;</span>
+          </div>
+        </a>
+        <a href="https://youtu.be/8DslJ5nrzlI" target="_blank" rel="noopener" class="series-entry">
+          <div class="series-thumb">
+            <img src="https://img.youtube.com/vi/8DslJ5nrzlI/mqdefault.jpg" alt="Gemini CLI vs Claude Code">
+          </div>
+          <div class="series-info">
+            <span class="series-name">Gemini CLI vs Claude Code</span>
+            <p class="series-desc">First impressions from a Claude user &mdash; what Gemini CLI does differently.</p>
+            <span class="series-count">Standalone &#x2197;</span>
+          </div>
+        </a>
+        <a href="https://youtu.be/IAULtkgZ_oc" target="_blank" rel="noopener" class="series-entry">
+          <div class="series-thumb">
+            <img src="https://img.youtube.com/vi/IAULtkgZ_oc/mqdefault.jpg" alt="Qwen Code — First Impressions">
+          </div>
+          <div class="series-info">
+            <span class="series-name">Qwen Code &mdash; First Impressions</span>
+            <p class="series-desc">Coding offline with local models &mdash; how well does Qwen Code hold up?</p>
+            <span class="series-count">Standalone &#x2197;</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+  </div>{{/* end .topic-grid */}}
+</main>
+{{ end }}
