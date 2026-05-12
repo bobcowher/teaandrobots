@@ -1,3 +1,5 @@
 public
 .claude/
 resources/_gen*
+.superpowers/
+docs/superpowers/
