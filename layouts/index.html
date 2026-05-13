@@ -5,27 +5,31 @@
 {{ define "main" }}
 <main class="home">
   <div class="home-intro">
-    <h1>Welcome to Tea &amp; Robots</h1>
+    <h1>Welcome.</h1>
     {{ .Content }}
   </div>
 
   <div class="home-feature-boxes">
-    <a href="/software/beekeeper/" class="feature-box">
+    <a href="https://beekeeperml.dev" class="feature-box">
+      <div class="feature-box__header">
+        <span class="feature-box__title">Beekeeper</span>
+      </div>
       <img class="feature-box__image"
-           src="/software/beekeeper/beekeeper.png"
+           src="/images/beekeeper-screenshot.png"
            alt="Beekeeper dashboard screenshot">
       <div class="feature-box__body">
-        <span class="feature-box__title">Beekeeper</span>
-        <p class="feature-box__desc">A remote reinforcement learning training tool for your homelab.</p>
+        <p class="feature-box__desc">Agent-first platform for running ML and RL workloads on your homelab. Built for researchers who don't have a cloud budget.</p>
       </div>
     </a>
     <a href="/channel-guide/" class="feature-box">
+      <div class="feature-box__header">
+        <span class="feature-box__title">YouTube Channel</span>
+      </div>
       <img class="feature-box__image"
-           src="https://img.youtube.com/vi/xx74RpH_Gxc/mqdefault.jpg"
+           src="/images/yt-q-learning.png"
            alt="Q-Learning to World Models — YouTube series">
       <div class="feature-box__body">
-        <span class="feature-box__title">YouTube Channel</span>
-        <p class="feature-box__desc">Series and standalone videos on RL, robotics, and AI tools.</p>
+        <p class="feature-box__desc">RL algorithms, robot arms, AI security, and more — built from scratch and documented on video.</p>
       </div>
     </a>
   </div>

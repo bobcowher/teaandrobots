@@ -6,7 +6,7 @@
 
 .home-intro {
   width: 100%;
-  max-width: $max-width;
+  max-width: 1100px;
   margin: 0 auto;
   padding: 0 20px;
   text-align: left;
@@ -15,10 +15,10 @@
 .home-feature-boxes {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 24px;
+  gap: 28px;
   width: 100%;
-  max-width: $max-width;
-  margin: 2rem auto;
+  max-width: 1100px;
+  margin: 2.5rem auto 4rem;
   padding: 0 20px;
   text-align: left;
 
@@ -67,8 +67,12 @@
     display: block;
   }
 
+  &__header {
+    padding: 12px 16px 10px;
+  }
+
   &__body {
-    padding: 14px 16px;
+    padding: 0 16px 14px;
   }
 
   &__title {

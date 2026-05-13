@@ -6,7 +6,7 @@ My goal is simple - I want to help create embodied intelligence. To give a robot
 
 Since I set out on that goal AI has, for lack of a better word, blown up. If you'd told me five years ago that we'd have a pretty functional version of Jarvis but Wall-E was still falling down the stairs, I'd have thought you were crazy, yet here we are. 
 
-There are many companies focused on robots, humanoid and other, and many more focused on extending the use of LLMs. My instinct here is that there are still fundamental problems to solve to allow data-effecient training of an embodied intelligence, and make it safe for use in human environments. I suspect both existing RL algorithms and LLMs will play a role, and that there are still many problems to solve.  
+There are many companies focused on robots, humanoid and other, and many more focused on extending the use of LLMs. My instinct here is that there are still fundamental problems to solve to allow data-efficient training of an embodied intelligence, and make it safe for use in human environments. I suspect both existing RL algorithms and LLMs will play a role, and that there are still many problems to solve.  
 
 So who am I and what am I doing about it? I'm not a professional researcher, just a very dedicated hobbyist who likes to build cool things. I play with robots, build Reinforcement Learning algorithms, and try to post everything I can on YouTube for other people to learn from. I'm also working on Beekeeper, an agent-first platform for managing ML/RL workloads in your home lab, with the goal of accelerating how much researchers with limited budgets are able to do. 
 

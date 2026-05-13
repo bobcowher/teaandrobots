@@ -3,6 +3,10 @@ languageCode = 'en-us'
 title = 'Tea & Robots'
 theme = "hello-friend"
 
+[params]
+  [params.logo]
+    logoText = "Tea & Robots"
+
 [markup]
   [markup.goldmark]
     [markup.goldmark.renderer]
