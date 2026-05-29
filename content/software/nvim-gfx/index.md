@@ -1,7 +1,7 @@
 ---
 title: "Neovim Graphics Viewer"
 date: 2026-05-28
-draft: true
+draft: false
 ---
 
 `nvim-gfx` is a Neovim plugin that displays images and video directly inside your terminal. Open a PNG, JPEG, WebP, or a video file in Neovim and it renders right where the buffer is — same position, same size. Zoom, pan, scrub video, close with standard Neovim keymaps. No context switch.
