@@ -97,11 +97,11 @@ In continuous mode, the action is a 2D vector `[vx, vy]` in `[-1, 1]²` controll
 }
 ```
 
-### Goals
+### Sub-Goals
 
-Each episode has a single active goal — a navigation target with pixel coordinates:
+`HomeBotGoalEnv` works in terms of sub-goals — atomic navigation targets that each resolve to a single pixel coordinate. The `goals` parameter accepts a list of sub-goal names; one is sampled uniformly per episode.
 
-| Goal | Target | Carry pre-loaded (training) |
+| Sub-goal | Target | Carry pre-loaded (training) |
 |---|---|---|
 | `go_to_fridge` | Fridge | — |
 | `deliver_drink` | Recliner | drink |
@@ -109,7 +109,9 @@ Each episode has a single active goal — a navigation target with pixel coordin
 | `deliver_package` | Recliner | package |
 | `collect_trash` | Random trash tile | — |
 
-Delivery goals pre-load the robot's carry state in training mode (`evaluate=False`) so the agent learns navigation independently from pickup sequencing.
+Delivery sub-goals pre-load the robot's carry state in training mode (`evaluate=False`) so the agent learns navigation to the delivery target independently from the pickup sequence. Set `evaluate=True` to disable this and test full pickup-to-delivery chains.
+
+`goal_to_coordinates(name)` converts any sub-goal name to pixel `(x, y)`. It is available on both env classes and importable directly from `homebot.goals`.
 
 ### Quick Start
 
@@ -127,8 +129,8 @@ obs, info = env.reset(seed=0, options={"goal": "go_to_fridge"})
 obs, info = env.reset(seed=0)
 print(info["active_goal"])  # e.g. "collect_trash"
 
-# Convert any goal name to coordinates (useful for LLM orchestrators):
-x, y = env.goal_to_coords("deliver_drink")
+# Convert any sub-goal name to pixel coordinates:
+x, y = env.goal_to_coordinates("deliver_drink")
 ```
 
 ### Reward
@@ -149,8 +151,37 @@ Sparse binary: `+1` when the robot reaches within 79 px of `desired_goal`, `0` o
 
 ### Episode Termination
 
-- **Terminated**: All active goals completed (trash cleared, drink delivered, package delivered)
-- **Truncated**: 1,000 steps elapsed without completing all goals
+- **Terminated**: Active sub-goal reached (robot within 79 px of `desired_goal`)
+- **Truncated**: Episode step limit elapsed
+
+## Orchestrated Evaluation
+
+For end-to-end evaluation with a multi-step curriculum, use `HomeBot2D-v1` with an external orchestrator. The orchestrator reads task state from `info`, selects the next sub-goal, and passes its pixel coordinates directly to the goal-conditioned policy.
+
+```python
+import gymnasium as gym
+import homebot
+
+env = gym.make("HomeBot2D-v1", render_mode="rgb_array")
+obs, info = env.reset(seed=0)
+
+while True:
+    # Orchestrator selects sub-goal from currently active options
+    sub_goal = orchestrator.decide(info["goals"], info["carrying"])
+
+    # Convert sub-goal name to pixel coordinates for the policy
+    gx, gy = env.goal_to_coordinates(sub_goal)
+
+    action = policy(obs, goal=(gx, gy))
+    obs, reward, terminated, truncated, info = env.step(action)
+
+    if terminated or truncated:
+        break
+```
+
+`info["goals"]` reflects the current task state — for example, once the robot picks up a drink, `"go_to_fridge"` is replaced by `"deliver_to_human"`. The orchestrator never needs to track carry state manually.
+
+In the long term, the orchestrator can be replaced by an LLM that reads the same `info` fields and calls `goal_to_coordinates()` to ground its output before passing it to the policy. The environment interface is identical in both cases.
 
 ## Tasks
 
@@ -231,10 +262,12 @@ env = gym.make(
 
 The `info` dict returned by `step()` depends on which environment is used.
 
-**`HomeBot2D-v1`** returns the full task state:
+**`HomeBot2D-v1`** returns full task state — useful for orchestrators:
 
 ```python
 {
+    'goals': list[str],          # active sub-goals given current carry state, e.g. ["go_to_fridge", "go_to_door"]
+    'carrying': str | None,      # item the robot is currently carrying, or None
     'trash_remaining': int,      # pieces of trash not yet collected
     'drink_delivered': bool,     # whether drink has been delivered
     'package_delivered': bool,   # whether package has been delivered
@@ -242,12 +275,12 @@ The `info` dict returned by `step()` depends on which environment is used.
 }
 ```
 
-**`HomeBot2D-Goal-v1`** returns goal-conditioned state:
+**`HomeBot2D-Goal-v1`** returns goal-conditioned state for HER training:
 
 ```python
 {
     'carrying': str | None,      # item the robot is currently carrying, or None
-    'active_goal': str,          # name of the current goal, e.g. "go_to_fridge"
+    'active_goal': str,          # name of the current sub-goal, e.g. "go_to_fridge"
 }
 ```
 
