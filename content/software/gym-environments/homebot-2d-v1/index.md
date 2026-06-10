@@ -6,7 +6,7 @@ draft: true
 
 HomeBot 2D is a Gymnasium environment for reinforcement learning research. It's a top-down 2D simulation where an agent navigates a furnished home, collecting trash, fetching drinks from the kitchen fridge, and retrieving packages from the front door.
 
-HomeBot 2D ships two Gymnasium environments: `HomeBot2D-v1` for standard training and evaluation, and `HomeBot2D-Goal-v1` for goal-conditioned training with Hindsight Experience Replay (HER).
+HomeBot 2D ships two Gymnasium environments: `HomeBot2D-V1` for standard training and evaluation, and `HomeBot2D-Goal-V1` for goal-conditioned training with Hindsight Experience Replay (HER).
 
 ![HomeBot 2D Environment](homebot-2d.png)
 
@@ -36,7 +36,7 @@ pip install torch torchvision torchaudio --index-url https://download.pytorch.or
 import gymnasium as gym
 import homebot
 
-env = gym.make('HomeBot2D-v1', render_mode='human')
+env = gym.make('HomeBot2D-V1', render_mode='human')
 obs, info = env.reset()
 
 for _ in range(1000):
@@ -85,7 +85,7 @@ In continuous mode, the action is a 2D vector `[vx, vy]` in `[-1, 1]²` controll
 
 ## Goal-Conditioned Training (HER)
 
-`HomeBot2D-Goal-v1` implements the `gymnasium.Env` interface with a Dict observation space for use with Hindsight Experience Replay algorithms.
+`HomeBot2D-Goal-V1` implements the `gymnasium.Env` interface with a Dict observation space for use with Hindsight Experience Replay algorithms.
 
 ### Observation Space
 
@@ -119,7 +119,7 @@ Delivery sub-goals pre-load the robot's carry state in training mode (`evaluate=
 import gymnasium as gym
 import homebot
 
-env = gym.make("HomeBot2D-Goal-v1", render_mode="rgb_array")
+env = gym.make("HomeBot2D-Goal-V1", render_mode="rgb_array")
 
 # Explicit goal:
 obs, info = env.reset(seed=0, options={"goal": "go_to_fridge"})
@@ -156,13 +156,13 @@ Sparse binary: `+1` when the robot reaches within 79 px of `desired_goal`, `0` o
 
 ## Orchestrated Evaluation
 
-For end-to-end evaluation with a multi-step curriculum, use `HomeBot2D-v1` with an external orchestrator. The orchestrator reads task state from `info`, selects the next sub-goal, and passes its pixel coordinates directly to the goal-conditioned policy.
+For end-to-end evaluation with a multi-step curriculum, use `HomeBot2D-V1` with an external orchestrator. The orchestrator reads task state from `info`, selects the next sub-goal, and passes its pixel coordinates directly to the goal-conditioned policy.
 
 ```python
 import gymnasium as gym
 import homebot
 
-env = gym.make("HomeBot2D-v1", render_mode="rgb_array")
+env = gym.make("HomeBot2D-V1", render_mode="rgb_array")
 obs, info = env.reset(seed=0)
 
 while True:
@@ -210,7 +210,7 @@ import gymnasium as gym
 import homebot
 from stable_baselines3 import PPO
 
-env = gym.make('HomeBot2D-v1', render_mode='rgb_array')
+env = gym.make('HomeBot2D-V1', render_mode='rgb_array')
 
 model = PPO(
     "CnnPolicy",
@@ -248,7 +248,7 @@ conda run -n homebot python play.py
 
 ```python
 env = gym.make(
-    'HomeBot2D-v1',
+    'HomeBot2D-V1',
     render_mode='rgb_array',   # 'human', 'rgb_array', or None
     action_mode='discrete',    # 'discrete' or 'continuous'
     obs_resolution=(84, 84),   # observation image size (H, W)
@@ -262,7 +262,7 @@ env = gym.make(
 
 The `info` dict returned by `step()` depends on which environment is used.
 
-**`HomeBot2D-v1`** returns full task state — useful for orchestrators:
+**`HomeBot2D-V1`** returns full task state — useful for orchestrators:
 
 ```python
 {
@@ -275,7 +275,7 @@ The `info` dict returned by `step()` depends on which environment is used.
 }
 ```
 
-**`HomeBot2D-Goal-v1`** returns goal-conditioned state for HER training:
+**`HomeBot2D-Goal-V1`** returns goal-conditioned state for HER training:
 
 ```python
 {
@@ -289,7 +289,7 @@ The `info` dict returned by `step()` depends on which environment is used.
 For deterministic episodes:
 
 ```python
-env = gym.make('HomeBot2D-v1')
+env = gym.make('HomeBot2D-V1')
 obs, info = env.reset(seed=42)
 ```
 
